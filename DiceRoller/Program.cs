@@ -1,100 +1,96 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace DiceRoller
+﻿using System.Reflection.Metadata.Ecma335;
+​
+namespace Dice_Lab
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            bool rollAgain = true;
-
-            Console.WriteLine("Welcome to Minnie's Casino.");
-
-
-            while (rollAgain == true)
+            bool goOn = true;
+            while (goOn == true)
             {
-                Console.Write("How many sides should each die have? ");
-                int num = 0;
+                int input;
                 try
                 {
-                    string dieSides = Console.ReadLine();
-                    num = int.Parse(dieSides);
-                    
+                    Console.WriteLine("Hello, please enter a positive integer for the number of sides for your custom pair of dice.");
+                    input = int.Parse(Console.ReadLine());
                 }
                 catch (FormatException e)
                 {
-                    Console.WriteLine("Please enter a numeric value.");
+                    Console.WriteLine("You must enter a positive integer");
                     continue;
                 }
-
-
-                int dieRoll = RandomNums(num);
-               int dieRoll2 = RandomNums(num);
-                string sixSided = "";
-
-
-                Console.WriteLine(dieRoll);
-               Console.WriteLine(dieRoll2);
-                int totalPoints = dieRoll + dieRoll2;
-                Console.WriteLine("You rolled a " + dieRoll + " and a " + dieRoll2 + ". Your total is: " + totalPoints);
-
-                if (num == 6)
+                if ((input >= 1 && input != 6))
                 {
-                    sixSided = SixSides(dieRoll, dieRoll2, totalPoints);
+                    Console.WriteLine("Okay, let's roll your " + input + "-sided dice");
+                    int roll1 = DieRoll(input);
+                    int roll2 = DieRoll(input);
+                    Console.WriteLine("You rolled a " + roll1 + " and a " + roll2 + " for a total of " + (roll1 + roll2));
+                    goOn = goAgain();
+                    break;
                 }
-                Console.WriteLine(sixSided);
-               rollAgain = AskToContinue();
+                else
+                {
+                    Console.WriteLine("The tried and true, " + input + "-sided dice!");
+                    int roll1 = DieRoll(input);
+                    int roll2 = DieRoll(input);
+                    Console.WriteLine("You rolled a " + roll1 + " and a " + roll2 + " for a total of " + (roll1 + roll2));
+                    Console.WriteLine(SixDie(roll1, roll2));
+                    goOn = goAgain();
+
+                }
             }
         }
-        public static int RandomNums(int dieSides)
+        public static string SixDie(int roll1, int roll2)
         {
-            Random rnd = new Random();
-            return rnd.Next(1, dieSides+ 1);
-        }
+            if (roll1 == 1 && roll1 == roll2)
+            {
+                return "Snake Eyes!\nCraps.....?";
+            }
+            else if (roll1 == 6 && roll1 == roll2)
+            {
+                return "Box Cars!\nCraps....?";
+            }
+            else if ((roll1 == 1 && roll2 == 2) || (roll1 == 2 && roll2 == 1))
+            {
+                return "Ace Deuce!\nCraps....?";
+            }
+            else if ((roll1 + roll2 == 7) || (roll1 + roll2 == 11))
+            {
+                return "You Win!!!";
+            }
 
-        public static string SixSides(int dieRoll, int dieRoll2, int totalPoints)
-        {
-            return "";
-            if (dieRoll == 1 && dieRoll2 == 1)
+
+            else
             {
-                return "Snake Eyes";
-            }
-            else if (dieRoll == 1 || dieRoll2 == 2 && dieRoll2 == 1 || dieRoll2 ==2)
-            {
-                return "Ace Deuce";
-            }
-            else if (dieRoll == 6 || dieRoll2 == 6)
-            {
-                return "Box Cars";
-            }
-            else if (totalPoints == 7 || totalPoints == 11)
-            {
-                return "Win";
-            }
-            else if (totalPoints == 2 || totalPoints == 3 || totalPoints == 12)
-            {
-                return "Craps";
+                return "I'm sorry, you lose!";
             }
         }
-
-        public static bool AskToContinue()
+        public static int DieRoll(int sides)
         {
-            Console.WriteLine("Would you like to roll again? Y/N.");
-            string answer = Console.ReadLine().ToLower();
-
-            if (answer == "y")
+            Random r = new Random();
+            int roll = r.Next(1, sides + 1);
+            return roll;
+        }
+        public static bool goAgain()
+        {
+            Console.WriteLine("Would you like to play again? Y/N");
+​
+            string input = Console.ReadLine().Trim().ToLower();
+​
+            if (input == "y")
             {
                 return true;
             }
-            else if (answer == "n")
+            else if (input == "n")
             {
                 Console.WriteLine("Thanks for playing!");
                 return false;
             }
             else
             {
-                Console.WriteLine("Sorry, that was an invalid response, please input a valid response.");
-                return AskToContinue();
+                Console.WriteLine("Please enter Y or N");
+                return goAgain();
             }
         }
     }
